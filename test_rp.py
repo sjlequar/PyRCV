@@ -1,5 +1,6 @@
 import nose, random
 import rp
+import functools
 
 def make_votes_from_cand_stren(candidates, strengths, num_votes, noise=3):
 	votes = []
@@ -25,7 +26,7 @@ def make_random_candidates_votes(num_candidates, num_votes, noise=3):
 	return c, v, s
 
 
-NUMTESTS = 1000
+NUMTESTS = 250
 FULLGRAPH = False
 
 def helper_running(nc, nv, nt):
@@ -105,6 +106,16 @@ def test_tied():
 		win_stren = max(s.values())
 		strongest = [c for c in s if s[c] == win_stren]
 		assert(len(rp.run(c, v)) == len(strongest))
+
+def test_full_order():
+	NUMCAND = 10
+	NUMVOTES = 100
+	for _ in range(NUMTESTS):
+		c, v, s = make_random_candidates_votes(NUMCAND, NUMVOTES)	
+		full = rp.full_order(c, v)
+		comb = functools.reduce(set.union, full, set())
+		print(full, comb, c)
+		assert(set(c) == comb)
 
 if __name__ == "__main__":
 	nose.runmodule()

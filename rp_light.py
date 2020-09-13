@@ -5,12 +5,10 @@ This module can run the Ranked Pairs election method given a set of votes
 represented as preferences. The implementation was taken from the wikipedia
 article on Ranked Pairs, with a few performance based modifications
 
+This module is the lightweight version with no dependencies 
+
 Written by Simon Lequar, Dabney '22
 """
-
-from networkx import DiGraph
-from networkx.algorithms.cycles import find_cycle
-from networkx.exception import NetworkXNoCycle as no_cycle
 
 def clean_votes(candidates, votes):
 	"""
@@ -29,7 +27,6 @@ def clean_votes(candidates, votes):
 			if candidate not in vote:
 				vote[candidate] = 0
 	return votes
-
 
 def _pair_ranker(pairs, comp):
 	"""
@@ -68,49 +65,14 @@ def _gen_pairs(candidates, votes):
 	# This helper function can be changed for different tiebreakers
 	return _pair_ranker(pairs, comp)
 
-def _graph(candidates, pairs):
-	"""
-	helper function for run(), evaluates winner of pairs given ordered pairs
-	slower than _faster_comp(), produces same results
-	"""
-	# This is the standard graph based way to do ranked pairs
-	g = DiGraph()
-	g.add_nodes_from(candidates)
-
-	# The strongest victories are added in order, unless there is a cycle,
-	# in which case they are skipped
-	edges = set()
-	for (i, j) in pairs:
-		if (j, i) not in edges:
-			g.add_edge(i, j)
-			# if a cycle exists, the edge is removed, otherwise continue
-			try:
-				find_cycle(g)
-				g.remove_edge(i, j)
-			except no_cycle:
-				pass
-			edges.add((i, j))
-
-	# We then find the source of the graph, which is the winner
-	winners = set()
-	for c in candidates:
-		try:
-			next(g.in_edges(c).__iter__())[0]
-		except StopIteration:
-			winners.add(c)
-
-	return winners
 
 def _faster_comp(candidates, pairs):
 	"""
 	helper function for run(), evaluates winner of pairs, but faster (by
-	about two orders of magnitude) than _graph()
+	about two orders of magnitude) than _graph() (now deprecated)
 	"""
-	# This tentatively works, it failed a test once (and only once), and I
-	# reran two orders of magnitudes more random tests and it passed them all
-	# This works by tracking all nodes that have an edge pointing into them
-	# and not checking any edge coming out of that node (as it wouldn't be a
-	# source on the graph in that case).
+	# This computation doesn't create the whole graph, but relies on the idea
+	# that the winner will never have an edge pointing to it
 	edges = set()
 	children = set()
 	for (i, j) in pairs:
@@ -137,7 +99,7 @@ def _check_bad_input(candidates, votes):
 		raise ValueError("Repeated Candidates")
 
 
-def run(candidates, votes, full_graph=False):
+def run(candidates, votes):
 	"""
 	params:
 	 - candidates (iterable 'a): The list or set of *unique* candidates
@@ -163,7 +125,7 @@ def run(candidates, votes, full_graph=False):
 
 	candidates = set(candidates)
 	pairs = _gen_pairs(candidates, votes)
-	winners = (_graph if full_graph else _faster_comp)(candidates, pairs)
+	winners = _faster_comp(candidates, pairs)
 	return winners
 
 def full_order(candidates, votes):
