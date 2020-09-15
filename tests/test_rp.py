@@ -1,5 +1,5 @@
 import nose, random
-import rp_with_graphs as rp
+import .rp_with_graphs as rp
 import functools
 
 def make_votes_from_cand_stren(candidates, strengths, num_votes, noise=3):

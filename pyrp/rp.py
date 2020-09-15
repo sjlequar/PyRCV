@@ -9,24 +9,7 @@ This module is the lightweight version with no dependencies
 
 Written by Simon Lequar, Dabney '22
 """
-
-def clean_votes(candidates, votes):
-	"""
-	params:
-	 - candidates (list 'a): The list of candidates
-	 - votes (list (dict {'a : Ord 'b})): The list of votes, which are
-	   candidates mapped to a preference
-	returns:
-	 - cleaned votes (list (dict {'a : Ord 'b}))
-
-	Cleans votes by adding a 0 for each non-present candidate, which means
-	votes should be in high-preference, high rank order (1-10 worst-best)
-	"""
-	for vote in votes:
-		for candidate in candidates:
-			if candidate not in vote:
-				vote[candidate] = 0
-	return votes
+from . import utils as _utils
 
 def _pair_ranker(pairs, comp):
 	"""
@@ -51,7 +34,7 @@ def _gen_pairs(candidates, votes):
 	"""
 	# We need to compare each pair (Ranked Pairs, duh) of candidates
 	pairs = [(i, j) for i in candidates for j in candidates if i != j]
-	votes = clean_votes(candidates, votes)
+	votes = _utils.clean_votes(candidates, votes)
 
 	# This calculates the strength of each pairwise election
 	comp = {}

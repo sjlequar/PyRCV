@@ -5,11 +5,11 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="rankedpairs", # Replace with your own username
-    version="0.0.3",
+    version="1.0.0",
     author="Simon Lequar",
     author_email="simon.lequar@gmail.com",
 	license='MIT',
-	keywords='voting',
+	keywords='voting vote election ranked pairs choice',
 
     description="A lightweight ranked pairs python package",
     long_description=long_description,
