@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="rankedpairs", # Replace with your own username
+    name="rankedpairs",
     version="1.0.0",
     author="Simon Lequar",
     author_email="simon.lequar@gmail.com",
